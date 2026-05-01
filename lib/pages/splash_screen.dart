@@ -78,14 +78,19 @@ class _SplashScreenState extends State<SplashScreen>
                 ),
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(32),
-                  child: Image.asset(
-                    'assets/app_logo.png',
-                    width: 140,
-                    height: 140,
-                    fit: BoxFit.cover,
+                child: Image.asset(
+                  'assets/app_logo.png',
+                  width: 140,
+                  height: 140,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => const Icon(
+                    Icons.music_note,
+                    size: 120,
+                    color: Colors.white70,
                   ),
                 ),
               ),
+            ),
               const SizedBox(height: 24),
               Text(
                 'Music Player',
