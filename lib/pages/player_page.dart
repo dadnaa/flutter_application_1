@@ -117,87 +117,162 @@ class _PlayerPageState extends State<PlayerPage>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Colors.black,
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text('Now Playing'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.network(currentSong.cover, height: 250, width: 250),
-            const SizedBox(height: 30),
-            Text(currentSong.title,
-                style: const TextStyle(color: Colors.white, fontSize: 22)),
-            const SizedBox(height: 10),
-            Text(currentSong.artist,
-                style: const TextStyle(color: Colors.grey, fontSize: 16)),
-            const SizedBox(height: 40),
-            StreamBuilder<Duration?>(
-              stream: _player.durationStream,
-              builder: (context, durSnap) {
-                final duration = durSnap.data ?? Duration.zero;
-                return StreamBuilder<Duration>(
-                  stream: _player.positionStream,
-                  builder: (context, posSnap) {
-                    final position = posSnap.data ?? Duration.zero;
-                    final maxMillis = duration.inMilliseconds.toDouble();
-                    final posMillis = position.inMilliseconds
-                        .toDouble()
-                        .clamp(0.0, maxMillis > 0 ? maxMillis : 0.0);
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                      child: Row(
-                        children: [
-                          Text(formatDuration(position),
-                              style: const TextStyle(color: Colors.white)),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Slider(
-                              activeColor: Colors.white,
-                              inactiveColor: Colors.grey,
-                              min: 0.0,
-                              max: maxMillis > 0 ? maxMillis : 1.0,
-                              value: maxMillis > 0 ? posMillis : 0.0,
-                              onChanged: (value) => _player
-                                  .seek(Duration(milliseconds: value.round())),
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: Image.network(
+              currentSong.cover,
+              fit: BoxFit.cover,
+              color: Colors.black.withOpacity(0.5),
+              colorBlendMode: BlendMode.darken,
+            ),
+          ),
+          Positioned.fill(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    const Color(0xFF0B0A14).withOpacity(0.95),
+                    const Color(0xFF0B0A14).withOpacity(0.7),
+                    Colors.transparent,
+                  ],
+                  begin: Alignment.bottomCenter,
+                  end: Alignment.topCenter,
+                ),
+              ),
+            ),
+          ),
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Card(
+                          margin: EdgeInsets.zero,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(20),
+                            child: Image.network(
+                              currentSong.cover,
+                              height: 260,
+                              width: 260,
+                              fit: BoxFit.cover,
                             ),
                           ),
-                          const SizedBox(width: 8),
-                          Text(formatDuration(duration),
-                              style: const TextStyle(color: Colors.white)),
+                        ),
+                        const SizedBox(height: 24),
+                        Text(
+                          currentSong.title,
+                          textAlign: TextAlign.center,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          currentSong.artist,
+                          style: theme.textTheme.bodyMedium
+                              ?.copyWith(color: Colors.white70),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Card(
+                    margin: EdgeInsets.zero,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 12,
+                        horizontal: 16,
+                      ),
+                      child: Column(
+                        children: [
+                          StreamBuilder<Duration?>(
+                            stream: _player.durationStream,
+                            builder: (context, durSnap) {
+                              final duration = durSnap.data ?? Duration.zero;
+                              return StreamBuilder<Duration>(
+                                stream: _player.positionStream,
+                                builder: (context, posSnap) {
+                                  final position =
+                                      posSnap.data ?? Duration.zero;
+                                  final maxMillis =
+                                      duration.inMilliseconds.toDouble();
+                                  final posMillis = position.inMilliseconds
+                                      .toDouble()
+                                      .clamp(0.0, maxMillis > 0 ? maxMillis : 0.0);
+                                  return Row(
+                                    children: [
+                                      Text(
+                                        formatDuration(position),
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(color: Colors.white70),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Slider(
+                                          min: 0.0,
+                                          max: maxMillis > 0 ? maxMillis : 1.0,
+                                          value: maxMillis > 0 ? posMillis : 0.0,
+                                          onChanged: (value) => _player.seek(
+                                            Duration(milliseconds: value.round()),
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        formatDuration(duration),
+                                        style: theme.textTheme.bodySmall
+                                            ?.copyWith(color: Colors.white70),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                          const SizedBox(height: 6),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.skip_previous),
+                                iconSize: 36,
+                                onPressed: prevSong,
+                              ),
+                              const SizedBox(width: 16),
+                              IconButton(
+                                icon: Icon(
+                                  isPlaying ? Icons.pause_circle : Icons.play_circle,
+                                ),
+                                iconSize: 58,
+                                onPressed: playPause,
+                              ),
+                              const SizedBox(width: 16),
+                              IconButton(
+                                icon: const Icon(Icons.skip_next),
+                                iconSize: 36,
+                                onPressed: nextSong,
+                              ),
+                            ],
+                          ),
                         ],
                       ),
-                    );
-                  },
-                );
-              },
+                    ),
+                  ),
+                ],
+              ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                    icon: const Icon(Icons.skip_previous, color: Colors.white),
-                    iconSize: 40,
-                    onPressed: prevSong),
-                const SizedBox(width: 20),
-                IconButton(
-                    icon: Icon(
-                        isPlaying ? Icons.pause : Icons.play_arrow,
-                        color: Colors.white),
-                    iconSize: 60,
-                    onPressed: playPause),
-                const SizedBox(width: 20),
-                IconButton(
-                    icon: const Icon(Icons.skip_next, color: Colors.white),
-                    iconSize: 40,
-                    onPressed: nextSong),
-              ],
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

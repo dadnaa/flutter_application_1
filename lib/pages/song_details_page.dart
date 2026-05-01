@@ -9,12 +9,8 @@ class SongDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-        title:
-            const Text("Song Details", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text("Song Details"),
       ),
       body: SongDetailsView(song: song),
     );

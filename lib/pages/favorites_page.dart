@@ -42,33 +42,66 @@ class _FavoritesPageState extends State<FavoritesPage> {
   }
 
   Widget _buildFavoritesList({required bool isLandscape}) {
+    final theme = Theme.of(context);
     if (favoritesList.isEmpty) {
-      return const Center(
-          child:
-              Text("No favorites yet", style: TextStyle(color: Colors.white)));
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.favorite_border,
+                size: 48, color: theme.colorScheme.secondary),
+            const SizedBox(height: 12),
+            Text(
+              "No favorites yet",
+              style: theme.textTheme.titleMedium,
+            ),
+            const SizedBox(height: 6),
+            Text(
+              "Tap the heart on any song to save it here.",
+              style: theme.textTheme.bodySmall?.copyWith(color: Colors.white60),
+            ),
+          ],
+        ),
+      );
     }
     return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 24),
       itemCount: favoritesList.length,
       itemBuilder: (context, index) {
         final song = favoritesList[index];
         final isSelected = _selected == song;
-        return ListTile(
-          selected: isLandscape && isSelected,
-          selectedTileColor: Colors.white12,
-          leading: Image.network(song.cover, width: 50, height: 50),
-          title:
-              Text(song.title, style: const TextStyle(color: Colors.white)),
-          subtitle:
-              Text(song.artist, style: const TextStyle(color: Colors.grey)),
-          onLongPress: () => _confirmRemoveFavorite(song),
-          onTap: () {
-            if (!isLandscape) {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => SongDetailsPage(song: song)));
-            } else {
-              setState(() => _selected = song);
-            }
-          },
+        return Card(
+          child: ListTile(
+            selected: isLandscape && isSelected,
+            selectedTileColor: Colors.white12,
+            leading: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                song.cover,
+                width: 56,
+                height: 56,
+                fit: BoxFit.cover,
+              ),
+            ),
+            title: Text(song.title),
+            subtitle: Text(
+              song.artist,
+              style: theme.textTheme.bodySmall?.copyWith(color: Colors.white60),
+            ),
+            onLongPress: () => _confirmRemoveFavorite(song),
+            onTap: () {
+              if (!isLandscape) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => SongDetailsPage(song: song),
+                  ),
+                );
+              } else {
+                setState(() => _selected = song);
+              }
+            },
+          ),
         );
       },
     );
@@ -79,12 +112,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
     final isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-        title:
-            const Text("Favorites", style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text("Favorites"),
       ),
       body: isLandscape
           ? Row(children: [
