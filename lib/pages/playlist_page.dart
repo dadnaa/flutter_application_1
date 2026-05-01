@@ -151,7 +151,7 @@ class _PlaylistPageState extends State<PlaylistPage> {
         title: const Text("Playlist"),
         actions: [
           IconButton(
-            icon: const Icon(Icons.headphones),
+            icon: const Icon(Icons.library_music),
             tooltip: 'Local music',
             onPressed: () => Navigator.push(
               context,
