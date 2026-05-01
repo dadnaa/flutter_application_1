@@ -70,12 +70,10 @@ class _LocalSongsPageState extends State<LocalSongsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-        title: const Text('Local Music', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.black,
-        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text('Local Music'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -84,22 +82,64 @@ class _LocalSongsPageState extends State<LocalSongsPage> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: CircularProgressIndicator(
+                color: theme.colorScheme.primary,
+              ),
+            )
           : _songs.isEmpty
-              ? const Center(child: Text('No music found on device', style: TextStyle(color: Colors.white70)))
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.library_music,
+                          size: 48, color: theme.colorScheme.primary),
+                      const SizedBox(height: 12),
+                      Text(
+                        'No music found on device',
+                        style: theme.textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Add songs to your device and refresh.',
+                        style: theme.textTheme.bodySmall
+                            ?.copyWith(color: Colors.white60),
+                      ),
+                    ],
+                  ),
+                )
               : ListView.builder(
+                  padding: const EdgeInsets.only(bottom: 24),
                   itemCount: _songs.length,
                   itemBuilder: (ctx, i) {
                     final s = _songs[i];
-                    return ListTile(
-                      leading: const Icon(Icons.audiotrack, color: Colors.white70),
-                      title: Text(s.title, style: const TextStyle(color: Colors.white)),
-                      subtitle: Text(s.artist ?? 'Unknown', style: const TextStyle(color: Colors.grey)),
-                      trailing: IconButton(
-                        icon: const Icon(Icons.play_circle, color: Colors.green),
-                        onPressed: () => _playThisSong(i),
+                    return Card(
+                      child: ListTile(
+                        leading: Container(
+                          width: 48,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: theme.colorScheme.primary.withOpacity(0.2),
+                          ),
+                          child: Icon(
+                            Icons.audiotrack,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                        title: Text(s.title),
+                        subtitle: Text(
+                          s.artist ?? 'Unknown',
+                          style: theme.textTheme.bodySmall
+                              ?.copyWith(color: Colors.white60),
+                        ),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.play_circle),
+                          color: theme.colorScheme.secondary,
+                          onPressed: () => _playThisSong(i),
+                        ),
+                        onTap: () => _playThisSong(i),
                       ),
-                      onTap: () => _playThisSong(i),
                     );
                   },
                 ),

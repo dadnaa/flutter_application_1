@@ -78,50 +78,69 @@ class _ForegroundPlayerTileState extends State<ForegroundPlayerTile> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        color: Colors.white10,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.white24),
-      ),
-      child: ListTile(
-        leading: const Icon(Icons.music_note, color: Colors.white, size: 36),
-        title: Text(
-          _currentTitle.isNotEmpty ? _currentTitle : 'No track selected',
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          _currentArtist.isNotEmpty ? _currentArtist : (_serviceStarted ? 'Select a local song' : 'Tap ▶ to start'),
-          style: const TextStyle(color: Colors.grey),
-        ),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (_serviceStarted) ...[
-              IconButton(
-                icon: const Icon(Icons.skip_previous, color: Colors.white),
-                onPressed: _onPrev,
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: ListTile(
+          leading: Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [
+                  theme.colorScheme.primary,
+                  theme.colorScheme.secondary,
+                ],
               ),
-              IconButton(
-                icon: Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle,
-                    color: Colors.white, size: 36),
-                onPressed: _onPlayPause,
-              ),
-              IconButton(
-                icon: const Icon(Icons.skip_next, color: Colors.white),
-                onPressed: _onNext,
-              ),
-              IconButton(
-                icon: const Icon(Icons.stop_circle, color: Colors.redAccent),
-                onPressed: _onStop,
-              ),
-            ] else
-              IconButton(
-                icon: const Icon(Icons.play_circle, color: Colors.white, size: 36),
-                onPressed: _onPlayPause,
-              ),
-          ],
+            ),
+            child: const Icon(Icons.graphic_eq, color: Colors.white),
+          ),
+          title: Text(
+            _currentTitle.isNotEmpty ? _currentTitle : 'No track selected',
+            style: theme.textTheme.titleSmall?.copyWith(
+              color: Colors.white,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          subtitle: Text(
+            _currentArtist.isNotEmpty
+                ? _currentArtist
+                : (_serviceStarted ? 'Select a local song' : 'Tap play to start'),
+            style: theme.textTheme.bodySmall?.copyWith(color: Colors.white60),
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (_serviceStarted) ...[
+                IconButton(
+                  icon: const Icon(Icons.skip_previous),
+                  onPressed: _onPrev,
+                ),
+                IconButton(
+                  icon: Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
+                  iconSize: 36,
+                  onPressed: _onPlayPause,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.skip_next),
+                  onPressed: _onNext,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.stop_circle, color: Colors.redAccent),
+                  onPressed: _onStop,
+                ),
+              ] else
+                IconButton(
+                  icon: const Icon(Icons.play_circle),
+                  iconSize: 36,
+                  onPressed: _onPlayPause,
+                ),
+            ],
+          ),
         ),
       ),
     );
