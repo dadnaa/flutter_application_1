@@ -42,3 +42,9 @@ android {
 flutter {
     source = "../.."
 }
+dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib")
+
+    implementation("androidx.media:media:1.6.0")
+    implementation("androidx.appcompat:appcompat:1.6.1")
+}

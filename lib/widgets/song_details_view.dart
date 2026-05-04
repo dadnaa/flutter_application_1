@@ -19,30 +19,44 @@ class SongDetailsView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Text(song.title,
-              style: const TextStyle(color: Colors.white, fontSize: 22)),
+          Text(
+            song.title,
+            style: const TextStyle(color: Colors.white, fontSize: 22),
+          ),
           const SizedBox(height: 6),
-          Text(song.artist,
-              style: const TextStyle(color: Colors.grey, fontSize: 16)),
+          Text(
+            song.artist,
+            style: const TextStyle(color: Colors.grey, fontSize: 16),
+          ),
           const SizedBox(height: 16),
-          const Text("Description",
-              style: TextStyle(color: Colors.white, fontSize: 18)),
+          const Text(
+            "Description",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
           const SizedBox(height: 8),
-          Text(song.description,
-              style: const TextStyle(color: Colors.white70, height: 1.4)),
+          Text(
+            song.description,
+            style: const TextStyle(color: Colors.white70, height: 1.4),
+          ),
           const SizedBox(height: 18),
-          const Text("More info",
-              style: TextStyle(color: Colors.white, fontSize: 18)),
+          const Text(
+            "More info",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
           const SizedBox(height: 8),
           _InfoRow(label: "Album", value: song.album),
           _InfoRow(label: "Year", value: song.year.toString()),
           _InfoRow(label: "Genre", value: song.genre),
           const SizedBox(height: 18),
-          const Text("Preview URL",
-              style: TextStyle(color: Colors.white, fontSize: 18)),
+          const Text(
+            "Preview URL",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
           const SizedBox(height: 8),
-          SelectableText(song.url,
-              style: const TextStyle(color: Colors.white70)),
+          SelectableText(
+            song.url,
+            style: const TextStyle(color: Colors.white70),
+          ),
         ],
       ),
     );
@@ -61,11 +75,12 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         children: [
           SizedBox(
-              width: 70,
-              child: Text(label, style: const TextStyle(color: Colors.grey))),
+            width: 70,
+            child: Text(label, style: const TextStyle(color: Colors.grey)),
+          ),
           Expanded(
-              child:
-                  Text(value, style: const TextStyle(color: Colors.white))),
+            child: Text(value, style: const TextStyle(color: Colors.white)),
+          ),
         ],
       ),
     );

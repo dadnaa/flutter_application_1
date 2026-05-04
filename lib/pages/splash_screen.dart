@@ -1,9 +1,21 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// splash_screen.dart
+//
+// FIXES:
+//   1. CRITICAL: The original file declared a second `List<Song> favoritesList`
+//      at the bottom. This meant there were THREE separate global favorite lists
+//      (data/favorites_state.dart, splash_screen.dart, and any local copies).
+//      All three are replaced by FavoritesNotifier.instance — one source of truth.
+//   2. Loads favorites via FavoritesNotifier.loadFromDb() instead of a raw list.
+//   3. Error handling: if DB load fails the app still proceeds (shows empty list).
+//   4. Unused playlist_data.dart import removed.
+// ─────────────────────────────────────────────────────────────────────────────
+
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../db/favorites_db.dart';
-import '../data/playlist_data.dart';
-import 'playlist_page.dart';
-import '../models/song.dart';
+import '../data/favorites_notifier.dart';
+import 'home_page.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -14,39 +26,37 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  Timer? _navigationTimer;
 
   @override
   void initState() {
     super.initState();
-    _controller =
-        AnimationController(vsync: this, duration: const Duration(seconds: 2));
-    _controller.forward();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 2),
+    )..forward();
 
-    Timer(const Duration(seconds: 2), () async {
-      // We'll store favorites globally – for simplicity, we'll keep a global var
-      // but you could use a provider. I'll keep the original approach:
-      // a global List<Song> favorites in a separate file? 
-      // To avoid too many changes, we keep it as is but you can refactor.
-      // For now, I'll just load them and store in a separate global file.
-      // Instead, we'll import a global favorites list from a new file.
-      // Let's create `lib/data/favorites_state.dart` (next step)
-      // For now, I'll assume you'll pass the loaded favorites back.
-      // I'll show a simple global approach.
-      final loaded = await FavoritesDb.getFavorites();
-      // We'll set a global variable defined in a separate file.
-      // We'll create `lib/data/favorites_state.dart` to hold `favorites`.
-      favoritesList = loaded;
-      if (mounted) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const PlaylistPage()),
-        );
-      }
-    });
+    _navigationTimer = Timer(const Duration(seconds: 2), _navigateToHome);
+  }
+
+  Future<void> _navigateToHome() async {
+    // FIX: Load into singleton FavoritesNotifier instead of a raw global list.
+    try {
+      await FavoritesNotifier.instance.loadFromDb();
+    } catch (_) {
+      // DB error — proceed with empty favorites so the app doesn't hard crash.
+    }
+    if (mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const HomePage()),
+      );
+    }
   }
 
   @override
   void dispose() {
+    _navigationTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }
@@ -59,14 +69,14 @@ class _SplashScreenState extends State<SplashScreen>
         child: RotationTransition(
           turns: _controller,
           child: Image.network(
-            "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTk9HyeEo51sGaClQfeHOraOhUS9sJ1ULVDMg&s",
+            'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTk9HyeEo51sGaClQfeHOraOhUS9sJ1ULVDMg&s',
             width: 150,
+            // FIX: Provide a fallback icon in case network is unavailable.
+            errorBuilder: (context, error, stackTrace) =>
+                const Icon(Icons.music_note, size: 100, color: Colors.white),
           ),
         ),
       ),
     );
   }
 }
-
-// Global favorites list (we'll store it here for simplicity)
-List <Song> favoritesList = [];
